@@ -1,6 +1,8 @@
 import os
+from datetime import datetime, date
 from email.mime.image import MIMEImage
 
+import cv2
 import googlemaps as googlemaps
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -80,3 +82,26 @@ class WhatsappHandler:
 
 class SMSHandler:
     print('to handle sms')
+
+
+class SnapShot:
+    cam = cv2.VideoCapture('rtsp://admin:adminpass1@192.168.1.108:554/cam/realmonitor?channel=1&subtype=0')
+    while True:
+        time = datetime.now().time()
+        the_date = date.today().strftime('%B-%d-%Y')
+        ret, frame = cam.read()
+        if not ret:
+            print("failed to grab frame")
+            break
+        cv2.imshow("test", frame)
+
+        k = cv2.waitKey(1)
+        img_name = f'{datetime.now().strftime("%d-%m-%Y")}.png'
+
+        file = cv2.imwrite(f'{datetime.now().strftime("%B %d, %Y, %H-%M-%S")}.png', frame)
+        print("{} written!".format(img_name))
+        break
+
+    cam.release()
+
+    cv2.destroyAllWindows()

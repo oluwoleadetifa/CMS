@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+</head>
+<body>
+<form method="POST" action="">
+    {% csrf_token %}
+    <div class="input-group mb-3">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="fas fa-user"></i></span>
+        </div>
+        {{ form.username }}
+    </div>
+    <div class="input-group mb-2">
+        <div class="input-group-append">
+            <span class="input-group-text"><i class="fas fa-key"></i></span>
+        </div>
+        {{ form.password }}
+    </div>
+
+    {% for message in messages %}
+        <p id="messages">{{ message }}</p>
+    {% endfor %}
+
+    <div class="d-flex justify-content-center mt-3 login_container">
+        <input class="btn login_btn" type="submit" value="Login">
+    </div>
+    <div>
+        Forgot password? click <a href="{% url 'password_reset' %}">here</a>
+    </div>
+</form>
+</body>
+</html>

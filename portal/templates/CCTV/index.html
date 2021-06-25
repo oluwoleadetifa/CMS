@@ -1,0 +1,12 @@
+<body>
+<div class="container">
+    <div class="row" style="display:flex; background-color: #79aec8; text-align: center">
+        {% for camera in cameras %}
+            <div class="col-lg-8  offset-lg-2">
+                <h3 class="mt-5">{{ camera.name }}</h3>
+                <iframe src="{% url 'cctv.video_feed' id=camera.id %}" height="300" width="400"></iframe>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+</body>

@@ -99,6 +99,7 @@ class SiteSettings(models.Model):
 
 class Controller(models.Model):
     name = models.CharField(max_length=100)
+    type = models.CharField(max_length=100, default='lmp636')
 
     def __str__(self):
         return self.name

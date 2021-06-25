@@ -1,13 +1,15 @@
 import threading
+from datetime import datetime, date
 
-import response as response
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
 import cv2
+
+import CCTV.models
+from .models import *
 # Create your views here.
 from django.views import View
-from odf.draw import Object
 
 
 def gen_frames(camera):
@@ -32,23 +34,28 @@ class IndexView(object):
         _, jpeg = cv2.imencode('.jpg', image)
         return jpeg.tobytes()
 
+    def get_shot(self):
+        image = self.frame
+        jpeg = cv2.imwrite(f'{datetime.now().strftime("%B %d, %Y, %H-%M-%S")}.png', image)
+        return jpeg
+
     def update(self):
         while True:
             (self.grabbed, self.frame) = self.video.read()
 
 
 @xframe_options_exempt
-def video_feed(request):
-    username = request.GET.get('username', 'admin')
-    password = request.GET.get('password', 'adminpass1')
-    host = request.GET.get('host', '192.168.0.108')
-    port = request.GET.get('port', '554')
+def video_feed(request, *args, **kwargs):
+    id = kwargs.get('id')
 
-    stream_url = f'rtsp://{username}:{password}@{host}:{port}/cam/realmonitor?channel=1&subtype=0'
+    param = CCTV.models.Camera.objects.get(id=id)
+    stream_url = f'rtsp://{param.username}:{param.password}@{param.host}:{param.port}/cam/realmonitor?channel=1&subtype=0'
     cam = IndexView(stream_url)
     return StreamingHttpResponse(gen_frames(cam), content_type='multipart/x-mixed-replace; boundary=frame')
 
 
 def index(request):
-    return render(request, 'index.html')
-
+    context = {
+        'cameras': Camera.objects.all()
+    }
+    return render(request=request, template_name='CCTV/index.html', context=context)
